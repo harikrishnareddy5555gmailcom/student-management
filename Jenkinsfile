@@ -6,11 +6,12 @@ pipeline {
     }
 
     stages {
-        stage('Clone Source Code') {
+        stage('Source Code Info') {
             steps {
-                git credentialsId: 'github-creds', url: 'https://github.com/harikrishnareddy5555gmailcom/student-management.git'
+                echo "Code already checked out from GitHub"
             }
         }
+
 
         stage('Build with Maven') {
             steps {
