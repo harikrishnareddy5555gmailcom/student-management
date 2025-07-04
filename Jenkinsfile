@@ -7,14 +7,14 @@ pipeline {
 
     stages {
         stage('Build with Maven') {
-            agent {
-                docker {
-                    image 'maven:3.9.6-eclipse-temurin-17'
-                }
-            }
             steps {
-                sh 'mvn clean package -DskipTests'
-                sh 'mvn test'
+                sh 'docker run --rm -v $PWD:/app -w /app maven:3.9.6-eclipse-temurin-17 mvn clean package -DskipTests'
+            }
+        }
+
+        stage('Run Unit Tests') {
+            steps {
+                sh 'docker run --rm -v $PWD:/app -w /app maven:3.9.6-eclipse-temurin-17 mvn test'
             }
         }
 
