@@ -1,30 +1,36 @@
 pipeline {
     agent any
 
-    tools {
-        maven 'Maven 3'
+    environment {
+        DOCKER_HUB_USER = 'harik0105'
+        IMAGE_NAME = 'student-management'
     }
 
     stages {
-        stage('Build') {
+        stage('Clone Source Code') {
+            steps {
+                git 'https://github.com/harikrishnareddy5555gmailcom/student-management.git'
+            }
+        }
+
+        stage('Build JAR') {
             steps {
                 sh 'mvn clean package -DskipTests'
             }
         }
 
-        stage('Test') {
+        stage('Build Docker Image') {
             steps {
-                sh 'mvn test'
+                sh "docker build -t ${DOCKER_HUB_USER}/${IMAGE_NAME} ."
             }
         }
-    }
 
-    post {
-        success {
-            echo '✅ Build and Test passed!'
-        }
-        failure {
-            echo '❌ Build failed.'
+        stage('Push to Docker Hub') {
+            steps {
+                withDockerRegistry([credentialsId: 'docker-hub-creds', url: '']) {
+                    sh "docker push ${DOCKER_HUB_USER}/${IMAGE_NAME}"
+                }
+            }
         }
     }
 }

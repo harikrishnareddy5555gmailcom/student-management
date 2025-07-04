@@ -1,12 +1,14 @@
-# Stage 1: Build the application using Maven
-FROM maven:3.9.6-eclipse-temurin-17 as builder
-WORKDIR /app
-COPY . .
-RUN mvn clean package -DskipTests
+# Use a lightweight JDK base image
+FROM openjdk:17-jdk-slim
 
-# Stage 2: Run the application using OpenJDK
-FROM eclipse-temurin:17-jdk
+# Set working directory
 WORKDIR /app
-COPY --from=builder /app/target/*.jar app.jar
+
+# Copy the JAR file to the container
+COPY target/student-management-0.0.1-SNAPSHOT.jar app.jar
+
+# Expose the port your app runs on
 EXPOSE 8081
+
+# Run the JAR file
 ENTRYPOINT ["java", "-jar", "app.jar"]
