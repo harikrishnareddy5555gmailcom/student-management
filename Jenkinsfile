@@ -1,45 +1,30 @@
 pipeline {
-    agent any
-
-    environment {
-        DOCKER_IMAGE = "harik0105/student-management"
+    agent {
+        docker {
+            image 'maven:3.9.6-eclipse-temurin-17'
+        }
     }
 
     stages {
         stage('Build with Maven') {
             steps {
-                sh 'docker run --rm -v $PWD:/app -w /app maven:3.9.6-eclipse-temurin-17 mvn clean package -DskipTests'
+                sh 'mvn clean package -DskipTests'
             }
         }
 
         stage('Run Unit Tests') {
             steps {
-                sh 'docker run --rm -v $PWD:/app -w /app maven:3.9.6-eclipse-temurin-17 mvn test'
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps {
-                sh "docker build -t $DOCKER_IMAGE ."
-            }
-        }
-
-        stage('Push Docker Image to Docker Hub') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh "echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin"
-                    sh "docker push $DOCKER_IMAGE"
-                }
+                sh 'mvn test'
             }
         }
     }
 
     post {
         success {
-            echo '✅ Pipeline executed successfully!'
+            echo '✅ Build and Test passed!'
         }
         failure {
-            echo '❌ Pipeline failed!'
+            echo '❌ Build failed.'
         }
     }
 }
