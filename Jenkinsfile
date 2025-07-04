@@ -1,29 +1,19 @@
 pipeline {
-    agent {
-        docker {
-            image 'maven:3.9.6-eclipse-temurin-17'
-        }
-    }
+    agent any
 
     environment {
         DOCKER_IMAGE = "harik0105/student-management"
     }
 
     stages {
-        stage('Source Code Info') {
-            steps {
-                echo "Code already checked out from GitHub"
-            }
-        }
-
         stage('Build with Maven') {
+            agent {
+                docker {
+                    image 'maven:3.9.6-eclipse-temurin-17'
+                }
+            }
             steps {
                 sh 'mvn clean package -DskipTests'
-            }
-        }
-
-        stage('Run Unit Tests') {
-            steps {
                 sh 'mvn test'
             }
         }
