@@ -1,5 +1,9 @@
 pipeline {
-    agent any
+    agent {
+        docker {
+            image 'maven:3.9.6-eclipse-temurin-17'
+        }
+    }
 
     environment {
         DOCKER_IMAGE = "harik0105/student-management"
@@ -11,7 +15,6 @@ pipeline {
                 echo "Code already checked out from GitHub"
             }
         }
-
 
         stage('Build with Maven') {
             steps {
